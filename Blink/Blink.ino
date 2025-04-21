@@ -15,7 +15,7 @@
   modified 2 Sep 2016
   by Arturo Guadalupi
   modified 8 Sep 2016
-  by Colby Newman
+  by Colby Newman**
 
   This example code is in the public domain.
 
@@ -23,11 +23,13 @@
 */
 
 int blueLED = 12;
+int redLED = 11;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(blueLED, OUTPUT);
+  pinMode(redLED, OUTPUT);
 }
 
 // the loop function runs over and over again forever
@@ -35,5 +37,9 @@ void loop() {
   digitalWrite(blueLED, HIGH);  // turn the LED on (HIGH is the voltage level)
   delay(3000);                      // wait for a second
   digitalWrite(blueLED, LOW);   // turn the LED off by making the voltage LOW
+  delay(500);                      // wait for a second
+  digitalWrite(redLED, HIGH);  // turn the LED on (HIGH is the voltage level)
+  delay(3000);                      // wait for a second
+  digitalWrite(redLED, LOW);   // turn the LED off by making the voltage LOW
   delay(500);                      // wait for a second
 }
