@@ -24,12 +24,16 @@
 
 int blueLED = 12;
 int redLED = 11;
+int greenLED = 10;
+int yellowLED = 9;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(blueLED, OUTPUT);
   pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(yellowLED, OUTPUT);
 }
 
 // the loop function runs over and over again forever
@@ -41,5 +45,13 @@ void loop() {
   digitalWrite(redLED, HIGH);  // turn the LED on (HIGH is the voltage level)
   delay(3000);                      // wait for a second
   digitalWrite(redLED, LOW);   // turn the LED off by making the voltage LOW
+
+  digitalWrite(greenLED, HIGH);  // turn the LED on (HIGH is the voltage level)
+  delay(3000);                      // wait for a second
+  digitalWrite(greenLED, LOW);   // turn the LED off by making the voltage LOW
+  delay(500);                      // wait for a second
+  digitalWrite(yellowLED, HIGH);  // turn the LED on (HIGH is the voltage level)
+  delay(3000);                      // wait for a second
+  digitalWrite(yellowLED, LOW);   // turn the LED off by making the voltage LOW
   delay(500);                      // wait for a second
 }
