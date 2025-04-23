@@ -1,43 +1,35 @@
-/*
-  Fade
+int blueled = 9;       // PWM pin for blue LED
+int redled = 10;       // PWM pin for red LED
 
-  This example shows how to fade an LED on pin 9 using the analogWrite()
-  function.
+int blueBrightness = 0;     // Current brightness of blue LED
+int redBrightness = 255;    // Start red LED at full brightness for staggered effect
 
-  The analogWrite() function uses PWM, so if you want to change the pin you're
-  using, be sure to use another PWM capable pin. On most Arduino, the PWM pins
-  are identified with a "~" sign, like ~3, ~5, ~6, ~9, ~10 and ~11.
+int blueFadeAmount = 5;     // Amount to fade blue LED by
+int redFadeAmount = -5;     // Fade red LED in opposite direction
 
-  This example code is in the public domain.
-
-  https://docs.arduino.cc/built-in-examples/basics/Fade/
-*/
-
-int blueled = 9;      // the PWM pin the LED is attached to
-int redled = 10;        
-int brightness = 0;  // how bright the LED is
-int fadeAmount = 5;  // how many points to fade the LED by
-
-// the setup routine runs once when you press reset:
 void setup() {
-  // declare pin 9 to be an output:
   pinMode(blueled, OUTPUT);
   pinMode(redled, OUTPUT);
 }
 
-// the loop routine runs over and over again forever:
 void loop() {
-  // set the brightness of pin 9:
-  analogWrite(blueled, brightness);
-  analogWrite(redled, brightness);
+  // Update LED brightness
+  analogWrite(blueled, blueBrightness);
+  analogWrite(redled, redBrightness);
 
-  // change the brightness for next time through the loop:
-  brightness = brightness + fadeAmount;
+  // Change brightness values for next loop
+  blueBrightness += blueFadeAmount;
+  redBrightness += redFadeAmount;
 
-  // reverse the direction of the fading at the ends of the fade:
-  if (brightness <= 0 || brightness >= 255) {
-    fadeAmount = -fadeAmount;
+  // Reverse fading direction at bounds for blue LED
+  if (blueBrightness <= 0 || blueBrightness >= 255) {
+    blueFadeAmount = -blueFadeAmount;
   }
-  // wait for 30 milliseconds to see the dimming effect
-  delay(30);
+
+  // Reverse fading direction at bounds for red LED
+  if (redBrightness <= 0 || redBrightness >= 255) {
+    redFadeAmount = -redFadeAmount;
+  }
+
+  delay(30);  // Delay to see the dimming effect
 }
