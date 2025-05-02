@@ -1,57 +1,172 @@
-/*
-  Blink
+#include <Servo.h> 
 
-  Turns an LED on for one second, then off for one second, repeatedly.
+// variables
+const int trigPin = 2;
+const int echoPin  = 9;
 
-  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
-  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
-  the correct LED pin independent of which board is used.
-  If you want to know what pin the on-board LED is connected to on your Arduino
-  model, check the Technical Specs of your board at:
-  https://docs.arduino.cc/hardware/
+long duration;
+int  distance;
 
-  modified 8 May 2014
-  by Scott Fitzgerald
-  modified 2 Sep 2016
-  by Arturo Guadalupi
-  modified 8 Sep 2016
-  by Colby Newman**
+int buzzpin = 7;
+int buzzState = LOW;
 
-  This example code is in the public domain.
+int ledRed = 3;
+int ledGreen = 4;
 
-  https://docs.arduino.cc/built-in-examples/basics/Blink/
-*/
+int switchpin = 10;
+int ledStatus = 8;
 
-int blueLED = 12;
-int redLED = 11;
-int greenLED = 10;
-int yellowLED = 9;
+byte leds = 0;
 
-// the setup function runs once when you press reset or power the board
+bool canSpin = true;
+
+unsigned long previousMillis = 0;
+
+const long intervalFar = 250;
+const long intervalClose = 50;
+const long intervalIdle = 1250;
+
+Servo myServo; 
+
+
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(blueLED, OUTPUT);
-  pinMode(redLED, OUTPUT);
-  pinMode(greenLED, OUTPUT);
-  pinMode(yellowLED, OUTPUT);
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT); 
+  Serial.begin(9600);
+  myServo.attach(12); 
+  pinMode(buzzpin, OUTPUT);
+  Serial.begin(9600);
+  pinMode(ledRed, OUTPUT);
+  pinMode(ledGreen, OUTPUT);
+  pinMode(switchpin, INPUT);
+  pinMode(ledStatus, OUTPUT);
 }
 
-// the loop function runs over and over again forever
+// turning the radar on-off
 void loop() {
-  digitalWrite(blueLED, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(3000);                      // wait for a second
-  digitalWrite(blueLED, LOW);   // turn the LED off by making the voltage LOW
-  delay(500);                      // wait for a second
-  digitalWrite(redLED, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(3000);                      // wait for a second
-  digitalWrite(redLED, LOW);   // turn the LED off by making the voltage LOW
+  if (digitalRead(switchpin) == HIGH){
+    digitalWrite(ledStatus, LOW);
+    StartScan();
+  }
+  if (digitalRead(switchpin) == LOW){
+    digitalWrite(ledStatus, HIGH);
+  }
+}
 
-  digitalWrite(greenLED, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(3000);                      // wait for a second
-  digitalWrite(greenLED, LOW);   // turn the LED off by making the voltage LOW
-  delay(500);                      // wait for a second
-  digitalWrite(yellowLED, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(3000);                      // wait for a second
-  digitalWrite(yellowLED, LOW);   // turn the LED off by making the voltage LOW
-  delay(500);                      // wait for a second
+// calculating the distance to a detected object
+int calculateDistance(){ 
+  digitalWrite(trigPin,  LOW); 
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH); 
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH); // reads echoPin and returns the sound wave travel time (ms)
+  distance = duration * 0.034 / 2;
+  return distance;
+}
+
+// start scanning for objects
+void StartScan() {
+  // checking for every degree
+
+  // first from right to left
+  for (int i = 15; i <= 165; i++) {  
+    myServo.write(i);
+    delay(30);
+    distance = calculateDistance();
+
+    // checking if something is detected in the 40 cm range
+    if (distance <= 40 && distance > 20) {
+      unsigned long currentMillis = millis();
+
+      if (currentMillis - previousMillis >= intervalFar) {
+        previousMillis = currentMillis;
+
+        if (buzzState == LOW) {
+          buzzState = HIGH;
+        } else {
+          buzzState = LOW;
+        }
+
+        digitalWrite(buzzpin, buzzState);
+        digitalWrite(ledRed, buzzState); 
+        digitalWrite(ledGreen, HIGH); 
+      }
+    } else if (distance <= 20 && distance > 0) {
+      unsigned long currentMillis = millis();
+
+      if (currentMillis - previousMillis >= intervalClose) {
+        previousMillis = currentMillis;
+
+        if (buzzState == LOW) {
+          buzzState = HIGH;
+        } else {
+          buzzState = LOW;
+        }
+
+        digitalWrite(buzzpin, buzzState);
+        digitalWrite(ledRed, buzzState); 
+        digitalWrite(ledGreen, HIGH); 
+      }
+    } else if (distance > 40) {
+      digitalWrite(buzzpin, LOW);
+      digitalWrite(ledGreen, LOW);
+      digitalWrite(ledRed, HIGH); 
+    }
+      
+    Serial.print(i); 
+    Serial.print(","); 
+    Serial.print(distance);  
+    Serial.print(".");
+  }
+
+  // then from left to right
+  for (int i = 165; i >= 15; i--) {  
+    myServo.write(i);
+    delay(30);
+    distance  = calculateDistance();
+
+    if (distance <= 40 && distance > 20) {
+      unsigned long currentMillis = millis();
+
+      if (currentMillis - previousMillis >= intervalFar) {
+        previousMillis = currentMillis;
+
+        if (buzzState == LOW) {
+          buzzState = HIGH;
+        } else {
+          buzzState = LOW;
+        }
+
+        digitalWrite(buzzpin, buzzState);
+        digitalWrite(ledRed, buzzState); 
+        digitalWrite(ledGreen, HIGH); 
+      }
+    } else if (distance <= 20 && distance > 0) {
+      unsigned long currentMillis = millis();
+
+      if (currentMillis - previousMillis >= intervalClose) {
+        previousMillis = currentMillis;
+
+        if (buzzState == LOW) {
+          buzzState = HIGH;
+        } else {
+          buzzState = LOW;
+        }
+
+        digitalWrite(buzzpin, buzzState);
+        digitalWrite(ledRed, buzzState); 
+        digitalWrite(ledGreen, HIGH); 
+      }
+    } else if (distance > 40) {
+      digitalWrite(buzzpin, LOW);
+      digitalWrite(ledGreen, LOW);
+      digitalWrite(ledRed, HIGH); 
+    }
+
+    Serial.print(i);
+    Serial.print(",");
+    Serial.print(distance);
+    Serial.print(".");
+  }
 }
