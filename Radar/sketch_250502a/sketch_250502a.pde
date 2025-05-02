@@ -21,9 +21,17 @@ PFont orcFont;
 
 
 void setup() {
+  println(Serial.list());
  size(1920, 1080);  // !!! change these values to your screen's resolution !!!
  smooth();
- myPort = new Serial(this, "/dev/ttyACM0",  9600); // !!! CHANGE THE SECOND PARAMETER TO YOUR CUSTOM COM PORT !!!
+ String[] ports = Serial.list();
+for (int i = 0; i < ports.length; i++) {
+  if (ports[i].contains("ttyACM0")) {
+    myPort = new Serial(this, ports[i], 9600);
+    break;
+  }
+}
+
  myPort.bufferUntil('.'); // actually reading:  angle,distance.
 }
 
